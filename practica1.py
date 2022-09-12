@@ -1,5 +1,6 @@
 #EduardoCuevasSolorza s
 from email.policy import default
+
 from pysnmp.hlapi import *
 import json
 
@@ -22,35 +23,48 @@ def agregarDispositivo():
 def editarDispositivo():
     print("\n---------------EDITAR---------------")
     f = open('dispositivos_guardados.txt','r')
-    dispositivos = f.read()
-    dispositivo = []
-    for aux in dispositivos.split("\n"):
-        dispositivo.append(aux)
-    print("Elija un dispositivo entre 1 y", len(dispositivo) - 1)
-    opc = input()
-    op =int(opc)
-    dis=[]
-    for aux2 in dispositivo[op-1].split(" "):
-        dis.append(aux2)
-    print(dis[0])
-    dis[0] = input("Comunidad: ")
-    dis[1] = input("Version SNMP: ")
-    dis[2] = input("Puerto: ")
-    dis[3] = input("IP: ")
-    outfile =  open('dispositivos_guardados.txt','w')
-    i = 0
-    print(dispositivo[op-1])
-    dispositivo[op-1][0]  = dis[0]
-    dispositivo[op-1][1]  = dis[1]
-    dispositivo[op-1][2]  = dis[2]
-    dispositivo[op-1][3]  = dis[3]
-    for i in range(len(dispositivo)):
-        outfile.write(dispositivo[i])
-        outfile.write("\n")
-    outfile.close()
+    #dispositivos = f.read()
+    dispositivos = f.readlines()
+    f.close()
+    print("Elija un dispositivo entre el 1 al", len(dispositivos))
+    aux = input()
+    opc = int(aux) - 1
+    print(dispositivos[opc])
+    comunidad = input("Nueva Comunidad: ")
+    version = input("Nueva Version SNMP: ")
+    puerto = input("Nuevo Puerto: ")
+    ip = input("Nueva IP: ")
+    dispositivos[opc] = comunidad + " " + version + " " + puerto + " " + ip
+    i=0
+    f = open('dispositivos_guardados.txt','w')
+    while i < len(dispositivos) :
+        f.write(dispositivos[i])
+        if i != len(dispositivos) - 1:
+            f.write("\n")
+        i+=1
+    f.close()
+
     
+
 def eliminarDispositivo():
     print("Eliminar dispositivo")
+    f = open('dispositivos_guardados.txt','r')
+    #dispositivos = f.read()
+    dispositivos = f.readlines()
+    f.close()
+    print("Elija un dispositivo para eliminar entre el 1 al", len(dispositivos))
+    aux = input()
+    opc = int(aux) - 1
+    f = open('dispositivos_guardados.txt','w')
+    i=0
+    while i < len(dispositivos) :
+        if i != opc:
+            f.write(dispositivos[i])
+            if i != len(dispositivos) - 1:
+                f.write("\n")
+        i+=1
+    f.close()
+
     
 def menu():
     print("\n-------------------------------------------------")
