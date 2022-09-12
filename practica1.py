@@ -1,8 +1,7 @@
 #EduardoCuevasSolorza s
 from email.policy import default
-
+from reportlab.pdfgen import canvas
 from pysnmp.hlapi import *
-import json
 
 def agregarDispositivo():
     print("\n---------------AGREGAR---------------")
@@ -65,7 +64,52 @@ def eliminarDispositivo():
         i+=1
     f.close()
 
+def generarReporte():
+    f = open('dispositivos_guardados.txt','r')
+    dispositivos = f.readlines()
+    f.close()
+    print("Elija un dispositivo para eliminar entre el 1 al", len(dispositivos))
+    aux = input()
+    opc = int(aux) - 1
+    datos = dispositivos[opc].split()
     
+    #Consultas
+    consulta = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.1.0")
+    so = consulta.split()[12]
+    nombre = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.5.0")
+    contacto = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.4.0")
+    ubicacion = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.6.0")
+    numeroInterfaces = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.2.1.0")
+    #'1.3.6.1.2.1.2.2.1.7.'
+    i = 1
+    stateInterfaces = []
+    
+    while i<=5 :
+        consultaIn = consultaSNMP(datos[0],datos[3],'1.3.6.1.2.1.2.2.1.7.' + str(i))
+        if consultaIn[1] == "1":
+            stateInterfaces.append("up")
+        elif consultaIn[1] == "2":
+            stateInterfaces.append("down")
+        else :
+            stateInterfaces.append("testing")
+        i+=1
+    print(stateInterfaces)
+    #Generar PDF
+
+    doc = canvas.Canvas("reporteSNMP.pdf")
+    doc.setTitle("Reporte SNMP")
+    doc.drawString(50, 750, "Administración de Servicios en Red")
+    doc.drawString(50, 725, "Práctica 1")
+    doc.drawString(50, 700, "Eduardo Cuevas Solorza 4CM13")
+    
+    doc.drawString(50,600, "Sistema operativo: " + so)
+    doc.drawString(50,575, "Nombre del dispositivo: " + nombre)
+    doc.drawString(50,550, "Contacto: " + contacto)
+    doc.drawString(50,525, "Ubicación: " + ubicacion)
+    doc.drawString(50,500, "Número de interfaces: " + numeroInterfaces)
+    
+    doc.save()
+
 def menu():
     print("\n-------------------------------------------------")
     print("Sistema de Administración de Red")
@@ -75,7 +119,8 @@ def menu():
     print("\nElige una opción:")
     print("\n1. Agregar dispositivo")
     print("2. Cambiar información de dispositivo")
-    print("3. Eliminar dispositivo\n")
+    print("3. Eliminar dispositivo")
+    print("4. Generar Reporte\n")
     opc = input()
 
     if opc == "1":
@@ -84,13 +129,15 @@ def menu():
         editarDispositivo()
     if opc == "3":
         eliminarDispositivo()
-    if opc<"3" and opc>"1":
+    if opc == "4":
+        generarReporte()
+    if opc<"4" and opc>"1":
         exit()
 
 def consultaSNMP(comunidad,host,oid):
     errorIndication, errorStatus, errorIndex, varBinds = next(
         getCmd(SnmpEngine(),
-               CommunityData(comunidad),
+               CommunityData(comunidad,mpModel=0),
                UdpTransportTarget((host, 161)),
                ContextData(),
                ObjectType(ObjectIdentity(oid))))
@@ -102,7 +149,7 @@ def consultaSNMP(comunidad,host,oid):
     else:
         for varBind in varBinds:
             varB=(' = '.join([x.prettyPrint() for x in varBind]))
-            resultado= varB.split()[2]
+            resultado= varB.split("=")[1]
     return resultado
 
 menu()
