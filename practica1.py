@@ -1,8 +1,18 @@
 #EduardoCuevasSolorza s
 from email.policy import default
 from reportlab.pdfgen import canvas
+from reportlab.platypus import (SimpleDocTemplate, PageBreak, Image, Spacer,
+Paragraph, Table, TableStyle)
+from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.pagesizes import A4
+from reportlab.lib import colors
 from pysnmp.hlapi import *
 
+
+width, height = A4
+def coord(x, y, unit=1):
+    x, y = x * unit, height -  y * unit
+    return x, y
 def agregarDispositivo():
     print("\n---------------AGREGAR---------------")
     comunidad = input("Comunidad: ")
@@ -75,27 +85,31 @@ def generarReporte():
     
     #Consultas
     consulta = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.1.0")
-    so = consulta.split()[12]
+    if consulta.find("Linux") == 1:
+        so = "Linux"
+    else:
+        so = "Windows"
     nombre = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.5.0")
     contacto = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.4.0")
     ubicacion = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.6.0")
     numeroInterfaces = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.2.1.0")
     #'1.3.6.1.2.1.2.2.1.7.'
     i = 1
-    stateInterfaces = []
     
+    data = [["Interfaz", 'Status']]
     while i<=5 :
-        consultaIn = consultaSNMP(datos[0],datos[3],'1.3.6.1.2.1.2.2.1.7.' + str(i))
-        if consultaIn[1] == "1":
-            stateInterfaces.append("up")
-        elif consultaIn[1] == "2":
-            stateInterfaces.append("down")
+        consultaState = consultaSNMP(datos[0],datos[3],'1.3.6.1.2.1.2.2.1.7.' + str(i))
+        consultaDes = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.2.2.1.2."+str(i))
+        if consultaState[1] == "1":
+            data.append([consultaDes,"up"])
+        elif consultaState[1] == "2":
+            data.append([consultaDes,"down"])
         else :
-            stateInterfaces.append("testing")
+            data.append([consultaDes,"testing"])
         i+=1
-    print(stateInterfaces)
+    
     #Generar PDF
-
+    
     doc = canvas.Canvas("reporteSNMP.pdf")
     doc.setTitle("Reporte SNMP")
     doc.drawString(50, 750, "Administración de Servicios en Red")
@@ -108,8 +122,14 @@ def generarReporte():
     doc.drawString(50,525, "Ubicación: " + ubicacion)
     doc.drawString(50,500, "Número de interfaces: " + numeroInterfaces)
     
+    width = 400
+    height = 100
+    x = 50
+    y = 200
+    f = Table(data)
+    f.wrapOn(doc, width, height)
+    f.drawOn(doc, x, y)
     doc.save()
-
 def menu():
     print("\n-------------------------------------------------")
     print("Sistema de Administración de Red")
