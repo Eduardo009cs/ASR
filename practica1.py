@@ -7,6 +7,7 @@ from reportlab.lib.styles import getSampleStyleSheet
 from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
 from pysnmp.hlapi import *
+from datetime import datetime
 
 
 width, height = A4
@@ -14,7 +15,7 @@ def coord(x, y, unit=1):
     x, y = x * unit, height -  y * unit
     return x, y
 def agregarDispositivo():
-    print("\n---------------AGREGAR---------------")
+    print("\n------------------------------AGREGAR------------------------------")
     comunidad = input("Comunidad: ")
     version = input("Version SNMP: ")
     puerto = input("Puerto: ")
@@ -30,15 +31,18 @@ def agregarDispositivo():
 
     
 def editarDispositivo():
-    print("\n---------------EDITAR---------------")
+    print("\n------------------------------EDITAR------------------------------")
     f = open('dispositivos_guardados.txt','r')
     #dispositivos = f.read()
     dispositivos = f.readlines()
     f.close()
-    print("Elija un dispositivo entre el 1 al", len(dispositivos))
+    print("Elija un dispositivo:\n")
+    i=0
+    while i<len(dispositivos):
+        print(i + 1,".- ",dispositivos[i])
+        i+=1
     aux = input()
     opc = int(aux) - 1
-    print(dispositivos[opc])
     comunidad = input("Nueva Comunidad: ")
     version = input("Nueva Version SNMP: ")
     puerto = input("Nuevo Puerto: ")
@@ -52,16 +56,20 @@ def editarDispositivo():
             f.write("\n")
         i+=1
     f.close()
-
-    
+    menu()
 
 def eliminarDispositivo():
-    print("Eliminar dispositivo")
+
+    print("\n------------------------------ELIMINAR------------------------------")
     f = open('dispositivos_guardados.txt','r')
     #dispositivos = f.read()
     dispositivos = f.readlines()
     f.close()
-    print("Elija un dispositivo para eliminar entre el 1 al", len(dispositivos))
+    print("Elija un dispositivo:\n")
+    i=0
+    while i<len(dispositivos):
+        print(i + 1,".- ",dispositivos[i])
+        i+=1
     aux = input()
     opc = int(aux) - 1
     f = open('dispositivos_guardados.txt','w')
@@ -73,12 +81,18 @@ def eliminarDispositivo():
                 f.write("\n")
         i+=1
     f.close()
+    menu()
 
 def generarReporte():
+    print("\n------------------------------REPORTE------------------------------")
     f = open('dispositivos_guardados.txt','r')
     dispositivos = f.readlines()
     f.close()
-    print("Elija un dispositivo para eliminar entre el 1 al", len(dispositivos))
+    print("Elija un dispositivo:\n")
+    i=0
+    while i<len(dispositivos):
+        print(i + 1,".- ",dispositivos[i])
+        i+=1
     aux = input()
     opc = int(aux) - 1
     datos = dispositivos[opc].split()
@@ -89,17 +103,25 @@ def generarReporte():
         so = "Linux"
     else:
         so = "Windows"
-    nombre = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.5.0")
+    nombreDispositivo = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.5.0")
     contacto = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.4.0")
     ubicacion = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.1.6.0")
     numeroInterfaces = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.2.1.0")
     #'1.3.6.1.2.1.2.2.1.7.'
     i = 1
-    
+    max = int(0)
     data = [["Interfaz", 'Status']]
-    while i<=5 :
+    if int(numeroInterfaces)>5 :
+        max = 5
+    else: 
+        max = int(numeroInterfaces)
+    while i<=max :
         consultaState = consultaSNMP(datos[0],datos[3],'1.3.6.1.2.1.2.2.1.7.' + str(i))
-        consultaDes = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.2.2.1.2."+str(i))
+        consultaAux = consultaSNMP(datos[0],datos[3],"1.3.6.1.2.1.2.2.1.2."+str(i))
+        if so != "Linux" :
+            consultaDes = bytes.fromhex(consultaAux[3:]).decode('utf-8')
+        else:
+            consultaDes = consultaAux
         if consultaState[1] == "1":
             data.append([consultaDes,"up"])
         elif consultaState[1] == "2":
@@ -109,27 +131,30 @@ def generarReporte():
         i+=1
     
     #Generar PDF
-    
-    doc = canvas.Canvas("reporteSNMP.pdf")
+    fecha = datetime.today().strftime('%Y_%m_%d_%H_%M_%S')
+    nombre = fecha + "_reporteSNMP.pdf"
+    doc = canvas.Canvas(nombre)
     doc.setTitle("Reporte SNMP")
     doc.drawString(50, 750, "Administración de Servicios en Red")
     doc.drawString(50, 725, "Práctica 1")
     doc.drawString(50, 700, "Eduardo Cuevas Solorza 4CM13")
     
     doc.drawString(50,600, "Sistema operativo: " + so)
-    doc.drawString(50,575, "Nombre del dispositivo: " + nombre)
+    doc.drawString(50,575, "Nombre del dispositivo: " + nombreDispositivo)
     doc.drawString(50,550, "Contacto: " + contacto)
     doc.drawString(50,525, "Ubicación: " + ubicacion)
     doc.drawString(50,500, "Número de interfaces: " + numeroInterfaces)
     
     width = 400
-    height = 100
-    x = 50
-    y = 200
-    f = Table(data)
+    height = 1000
+    x = 175
+    y = 325
+    f = Table(data,style=[
+                ('GRID',(0,0),(-1,-1),0.5,colors.gray),('ALIGN',(0,0),(1,0),'CENTER')])
     f.wrapOn(doc, width, height)
     f.drawOn(doc, x, y)
     doc.save()
+    menu()
 def menu():
     print("\n-------------------------------------------------")
     print("Sistema de Administración de Red")
