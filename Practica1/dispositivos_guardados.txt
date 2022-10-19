@@ -1,2 +1,1 @@
-comunidadASR 1 161 localhost
-comunidadSNMP 1 161 192.168.1.72
+eduardoCuevas 1 161 172.20.10.7
