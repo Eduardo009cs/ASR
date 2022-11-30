@@ -4,7 +4,7 @@
 <rrd>
 	<version>0003</version>
 	<step>60</step> <!-- Seconds -->
-	<lastupdate>1669776207</lastupdate> <!-- 2022-11-29 20:43:27 CST -->
+	<lastupdate>1669776242</lastupdate> <!-- 2022-11-29 20:44:02 CST -->
 
 	<ds>
 		<name> usoCPU </name>
@@ -14,8 +14,8 @@
 		<max>1.0000000000e+02</max>
 
 		<!-- PDP Status -->
-		<last_ds>21.5</last_ds>
-		<value>5.9322159300e+02</value>
+		<last_ds>50.0</last_ds>
+		<value>1.3774045000e+02</value>
 		<unknown_sec> 0 </unknown_sec>
 	</ds>
 
@@ -28,7 +28,7 @@
 
 		<!-- PDP Status -->
 		<last_ds>85.07</last_ds>
-		<value>2.3373006963e+03</value>
+		<value>2.3435160163e+02</value>
 		<unknown_sec> 0 </unknown_sec>
 	</ds>
 
@@ -41,7 +41,7 @@
 
 		<!-- PDP Status -->
 		<last_ds>35.53</last_ds>
-		<value>9.8033317206e+02</value>
+		<value>9.7878363770e+01</value>
 		<unknown_sec> 0 </unknown_sec>
 	</ds>
 
@@ -55,13 +55,13 @@
 		</params>
 		<cdp_prep>
 			<ds>
-			<primary_value>2.8872429242e+01</primary_value>
+			<primary_value>2.7157945875e+01</primary_value>
 			<secondary_value>NaN</secondary_value>
 			<value>NaN</value>
 			<unknown_datapoints>0</unknown_datapoints>
 			</ds>
 			<ds>
-			<primary_value>8.3750000000e+01</primary_value>
+			<primary_value>8.4904576786e+01</primary_value>
 			<secondary_value>NaN</secondary_value>
 			<value>NaN</value>
 			<unknown_datapoints>0</unknown_datapoints>
@@ -74,7 +74,6 @@
 			</ds>
 		</cdp_prep>
 		<database>
-			<!-- 2022-11-29 20:20:00 CST / 1669774800 --> <row><v>NaN</v><v>NaN</v><v>NaN</v></row>
 			<!-- 2022-11-29 20:21:00 CST / 1669774860 --> <row><v>NaN</v><v>NaN</v><v>NaN</v></row>
 			<!-- 2022-11-29 20:22:00 CST / 1669774920 --> <row><v>NaN</v><v>NaN</v><v>NaN</v></row>
 			<!-- 2022-11-29 20:23:00 CST / 1669774980 --> <row><v>NaN</v><v>NaN</v><v>NaN</v></row>
@@ -98,6 +97,7 @@
 			<!-- 2022-11-29 20:41:00 CST / 1669776060 --> <row><v>4.7266192933e+01</v><v>8.3450000000e+01</v><v>3.5530000000e+01</v></row>
 			<!-- 2022-11-29 20:42:00 CST / 1669776120 --> <row><v>4.3021047475e+01</v><v>8.3715364810e+01</v><v>3.5530000000e+01</v></row>
 			<!-- 2022-11-29 20:43:00 CST / 1669776180 --> <row><v>2.8872429242e+01</v><v>8.3750000000e+01</v><v>3.5530000000e+01</v></row>
+			<!-- 2022-11-29 20:44:00 CST / 1669776240 --> <row><v>2.7157945875e+01</v><v>8.4904576786e+01</v><v>3.5530000000e+01</v></row>
 		</database>
 	</rra>
 </rrd>
