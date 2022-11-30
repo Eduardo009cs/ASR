@@ -33,15 +33,11 @@ def generarGrafica(ultima_lectura,dato,titulo,u1,u2,u3):
                      "AREA:umbral"+u3+"#FF0000:Carga " + titulo +" mayor de "+u3+"",
                      "HRULE:"+u1+"#00FF00:Umbral  "+u1+"%",
                      "HRULE:"+u2+"#FF7A00:Umbral  "+u2+"%",
-                     "HRULE:"+u3+"#FF0000:Umbral  "+u3+"%",
-                     "PRINT:cargaLAST:%6.2lf",
-                     "GPRINT:cargaMIN:%6.2lf %SMIN",
-                     "GPRINT:cargaSTDEV:%6.2lf %SSTDEV",
-                     "GPRINT:cargaLAST:%6.2lf %SLAST" )
+                     "HRULE:"+u3+"#FF0000:Umbral  "+u3+"%")
     #print (ret)
 pathImage = "Images/useCPU.png"
 envioCPU30 = True
-envioCPU75 = True
+envioCPU50 = True
 envioCPU80 = True
 
 envioRAM30 = True
@@ -54,6 +50,7 @@ envioDisco90 = True
 
 
 while (1):
+    time.sleep(30)
     ultima_actualizacion = rrdtool.lastupdate(rrdpath + "trend.rrd")
     timestamp=ultima_actualizacion['date'].timestamp()
     datoCPU=ultima_actualizacion['ds']["usoCPU"]
@@ -65,58 +62,58 @@ while (1):
     
     if datoCPU> 80 and envioCPU80:
         pathImage = "Images/CPU.png"
-        generarGrafica(int(timestamp),"usoCPU","CPU","30","75","80")
+        generarGrafica(int(timestamp),"usoCPU","CPU","30","50","80")
         send_alert_attached("-----NOTIFICACIÓN: USO EXCESIVO CPU-----","El uso del CPU esta por encima del 80%, favor de tomar las medidas correspondientes.",pathImage)
         envioCPU80 = False
         print("Enviado")
-    elif datoCPU >75 and envioCPU75:
+    elif datoCPU >49 and datoCPU<80 and envioCPU50:
         pathImage = "Images/CPU.png"
-        generarGrafica(int(timestamp),"usoCPU","CPU","30","75","80")
-        send_alert_attached("-----NOTIFICACIÓN: USO MODERADO CPU-----","El uso del CPU esta por encima del 75%, favor de monitoriar el uso.",pathImage)
-        envioCPU75 = False
-        print("Enviado")
-    elif datoCPU > 30 and envioCPU30:
+        generarGrafica(int(timestamp),"usoCPU","CPU","30","50","80")
+        send_alert_attached("-----NOTIFICACIÓN: USO MODERADO CPU-----","El uso del CPU esta por encima del 50%, favor de monitoriar el uso.",pathImage)
+        envioCPU50 = False
+        print("Enviado")            
+    elif datoCPU > 29 and datoCPU<50 and envioCPU30:
         pathImage = "Images/CPU.png"
-        generarGrafica(int(timestamp),"usoCPU","CPU","30","75","80")
+        generarGrafica(int(timestamp),"usoCPU","CPU","30","50","80")
         envioCPU30 = False
         send_alert_attached("-----NOTIFICACIÓN: USO NORMAL CPU-----","El uso del CPU esta por encima del 30%.",pathImage)
         print("Enviado")
-    
-    """if datoRAM> 80 and envioRAM80:
+        
+    """if datoRAM> 79 and envioRAM80:
         pathImage = "Images/RAM.png"
         generarGrafica(int(timestamp),"usoRAM","RAM","30","70","80")
         send_alert_attached("-----NOTIFICACIÓN: USO EXCESIVO RAM-----","El uso de la RAM esta por encima del 80%, favor de tomar las medidas correspondientes.",pathImage)
         envioRAM80 = False
         print("Enviado")
-    elif datoRAM >70 and envioRAM70:
+    elif datoRAM >69 and datoRAM <80 and envioRAM70:
         pathImage = "Images/RAM.png"
         generarGrafica(int(timestamp),"usoRAM","RAM","30","70","80")
         send_alert_attached("-----NOTIFICACIÓN: USO MODERADO RAM-----","El uso de la RAM esta por encima del 70%, favor de monitoriar el uso.",pathImage)
         envioRAM70 = False
         print("Enviado")
-    elif datoRAM > 30 and envioRAM30:
+    elif datoRAM > 29 and datoRAM < 70 envioRAM30:
         pathImage = "Images/RAM.png"
         generarGrafica(int(timestamp),"usoRAM","RAM","30","70","80")
         envioRAM30 = False
         send_alert_attached("-----NOTIFICACIÓN: USO NORMAL RAM-----","El uso de la RAM esta por encima del 30%.",pathImage)
         print("Enviado")"""
 
-    """if datoDisco> 90 and envioDisco90:
+    """if datoDisco > 89 and envioDisco90:
         pathImage = "Images/Disco.png"
         generarGrafica(int(timestamp),"usoDisco","Disco","30","70","90")
         send_alert_attached("-----NOTIFICACIÓN: USO EXCESIVO DISCO-----","El uso del Disco esta por encima del 90%, favor de tomar las medidas correspondientes.",pathImage)
         envioDisco90 = False
         print("Enviado")
-    elif datoDisco >70 and envioDisco70:
+    elif datoDisco > 69 and datoDisco<90 and envioDisco70:
         pathImage = "Images/Disco.png"
         generarGrafica(int(timestamp),"usoDisco","Disco","30","70","90")
         send_alert_attached("-----NOTIFICACIÓN: USO MODERADO DISCO-----","El uso del Disco esta por encima del 70%, favor de monitoriar el uso del Disco.",pathImage)
         envioDisco70 = False
         print("Enviado")
-    elif datoDisco > 30 and envioDisco30:
+    elif datoDisco > 29 and datoDisco<70 envioDisco30:
         pathImage = "Images/Disco.png"
         generarGrafica(int(timestamp),"usoDisco","Disco","30","70","90")
         envioDisco30 = False
         send_alert_attached("-----NOTIFICACIÓN: USO NORMAL DISCO-----","El uso del Disco esta por encima del 30%.",pathImage)
         print("Enviado")"""
-    time.sleep(20)
+    time.sleep(30)
